@@ -1,59 +1,24 @@
-# Fun.xyz Information
 
-## Objective
-The goal of this assignment is to assess your frontend development skills,
-particularly with React, your ability to interact with APIs, your understanding of
-component design, and your product sense in translating requirements into a
-working application. You will build a simplified interface that allows users to select
-crypto tokens and see their value relative to a USD amount and another crypto
-token.
+## Running locally
+- Duplicate `.env.example` as `.env.local` and populate the key(s)
+- Run `pnpm i` to install node modules
+- Run `pnpm dev` to run the development server
+- The frontend should be accessible at http://localhost:3000
 
-## Scenario
-
-Imagine you are building a feature for a crypto platform where users can explore
-potential token swaps. They need a simple tool to select two tokens (a source and
-a target) and input a USD amount to see the approximate equivalent amounts in
-those tokens.
+## Deployment
+The application is deployed via Vercel and is accessible on https://fun-xyz.vercel.app/.
 
 ## Assumptions
 1. That the API key given is not a secret key, that it is ok to be used directly on the frontend. If not, we should access the API through a proxy backend.
 2. We will use a hardcoded list of tokens as it is not documented which tokens are supported by the API.
 
-# Next.js Instructions
+## Design choices
+1. Used a dark theme to match most Crypto apps, as well as the fun.xyz site.
+2. Chose to display elements step by step so as not to overload the user at the start.
+3. The "I want to convert..." format acts as a guide for the user to explain what is happening on the page.
+4. The bidirectional arrow between the token selects, allow the user to swap the two tokens.
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Library choices
+- `next`: Next.js framework for its performance, developer experience, and integration with Vercel (for deployments).
+- `@mui/material`: Material UI as the UI library for its simplicity and popularity.
+- `@tanstack/react-query`: Tanstack Query to manage API requests. Using this for data/loading/error state management, request retries, cached results.
