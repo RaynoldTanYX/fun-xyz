@@ -13,12 +13,12 @@ The application is deployed via Vercel and is accessible on https://fun-xyz.verc
 2. We will use a hardcoded list of tokens as it is not documented which tokens are supported by the API.
 
 ## Design choices
-1. Used a dark theme to match most Crypto apps, as well as the fun.xyz site.
+1. Used a dark theme to match most Crypto apps, as well as the [fun.xyz](https://fun.xyz) site.
 2. Chose to display elements step by step so as not to overload the user at the start.
 3. The "I want to convert..." format acts as a guide for the user to explain what is happening on the page.
 4. The bidirectional arrow between the token selects, allow the user to swap the two tokens.
 
 ## Library choices
-- `next`: Next.js framework for its performance, developer experience, and integration with Vercel (for deployments).
-- `@mui/material`: Material UI as the UI library for its simplicity and popularity.
-- `@tanstack/react-query`: Tanstack Query to manage API requests. Using this for data/loading/error state management, request retries, cached results.
+- `next`: [Next.js](https://nextjs.org) framework for its performance, developer experience, and integration with Vercel (for deployments).
+- `@mui/material`: [Material UI](https://mui.com) as the UI library for its simplicity and popularity.
+- `@tanstack/react-query`: [Tanstack Query](https://tanstack.com/query/latest/docs/framework/react/overview) to manage API requests. Using this for data/loading/error state management, request retries, cached results.
