@@ -52,10 +52,10 @@ export default function Home() {
   };
 
   const onChangeToAmount = (amount: string) => {
-    setLastTouchedAmount("from");
+    setLastTouchedAmount("to");
     setToAmount(amount);
     if (conversionRatio === undefined) return;
-    setFromAmount((Number(amount) / conversionRatio).toString());
+    setFromAmount((Number(amount) * conversionRatio).toString());
   };
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function Home() {
       return;
     }
     if (lastTouchedAmount == "to") {
-      setFromAmount((Number(toAmount) / conversionRatio).toString());
+      setFromAmount((Number(toAmount) * conversionRatio).toString());
     } else {
       setToAmount((Number(fromAmount) / conversionRatio).toString());
     }
