@@ -36,6 +36,10 @@ export default function Home() {
     const currentFromToken = fromToken;
     setFromToken(toToken);
     setToToken(currentFromToken);
+
+    const currentFromAmount = fromAmount;
+    setFromAmount(toAmount);
+    setToAmount(currentFromAmount);
   };
 
   const onChangeFromAmount = (amount: string) => {
@@ -97,6 +101,7 @@ export default function Home() {
             type="number"
             value={fromAmount}
             onChange={(event) => onChangeFromAmount(event.target.value)}
+            placeholder="Number of units"
           />
         </Grid>
         <Grid>=</Grid>
@@ -105,6 +110,7 @@ export default function Home() {
             type="number"
             value={toAmount}
             onChange={(event) => onChangeToAmount(event.target.value)}
+            placeholder="Number of units"
           />
         </Grid>
       </Grid>
