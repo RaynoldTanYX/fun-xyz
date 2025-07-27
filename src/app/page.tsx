@@ -4,7 +4,7 @@ import { TokenSelect } from "@/components/TokenSelect";
 import { tokens } from "@/constants/tokens";
 import { useTokenPriceInfo } from "@/hooks/useTokenPriceInfo";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
-import { Grid, IconButton, Input, Typography } from "@mui/material";
+import { Grid, IconButton, Input, Skeleton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -19,14 +19,16 @@ export default function Home() {
   const fromTokenInfo = tokens.find((data) => data.symbol === fromToken);
   const toTokenInfo = tokens.find((data) => data.symbol === toToken);
 
-  const { data: fromPriceInfo } = useTokenPriceInfo({
-    chainId: fromTokenInfo?.chainId || "",
-    symbol: fromTokenInfo?.symbol || "",
-  });
-  const { data: toPriceInfo } = useTokenPriceInfo({
-    chainId: toTokenInfo?.chainId || "",
-    symbol: toTokenInfo?.symbol || "",
-  });
+  const { data: fromPriceInfo, isLoading: isFromPriceInfoLoading } =
+    useTokenPriceInfo({
+      chainId: fromTokenInfo?.chainId || "",
+      symbol: fromTokenInfo?.symbol || "",
+    });
+  const { data: toPriceInfo, isLoading: isToPriceInfoLoading } =
+    useTokenPriceInfo({
+      chainId: toTokenInfo?.chainId || "",
+      symbol: toTokenInfo?.symbol || "",
+    });
   const conversionRatio: number | undefined =
     fromPriceInfo && toPriceInfo
       ? toPriceInfo.unitPrice / fromPriceInfo.unitPrice
@@ -81,9 +83,13 @@ export default function Home() {
       <Grid container spacing={2} justifyContent="center">
         <Grid>
           <TokenSelect value={fromToken} onChange={setFromToken} label="From" />
-          {fromPriceInfo?.unitPrice
-            ? `${fromPriceInfo.unitPrice} USD/unit`
-            : ""}
+          {isFromPriceInfoLoading ? (
+            <Skeleton />
+          ) : fromPriceInfo?.unitPrice ? (
+            `${fromPriceInfo.unitPrice} USD/unit`
+          ) : (
+            ""
+          )}
         </Grid>
         <Grid paddingTop={1}>
           <IconButton onClick={onClickSwap}>
@@ -92,7 +98,13 @@ export default function Home() {
         </Grid>
         <Grid>
           <TokenSelect value={toToken} onChange={setToToken} label="To" />
-          {toPriceInfo?.unitPrice ? `${toPriceInfo.unitPrice} USD/unit` : ""}
+          {isToPriceInfoLoading ? (
+            <Skeleton />
+          ) : toPriceInfo?.unitPrice ? (
+            `${toPriceInfo.unitPrice} USD/unit`
+          ) : (
+            ""
+          )}
         </Grid>
       </Grid>
       <Grid container spacing={2} justifyContent="center">
