@@ -20,6 +20,7 @@ export const TokenSelect = ({
       renderInput={(params) => <TextField {...params} label={label} />}
       value={value}
       onChange={(_event, value) => onChange(value || "")}
+      disableClearable
     />
   );
 };

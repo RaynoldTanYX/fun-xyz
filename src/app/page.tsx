@@ -3,21 +3,20 @@
 import { TokenSelect } from "@/components/TokenSelect";
 import { tokens } from "@/constants/tokens";
 import { useTokenPriceInfo } from "@/hooks/useTokenPriceInfo";
+import { DoubleArrow } from "@mui/icons-material";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { Grid, IconButton, Input, Skeleton, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Home() {
   const [fromToken, setFromToken] = useState<string>("");
   const [toToken, setToToken] = useState<string>("");
-  const [fromAmount, setFromAmount] = useState<string>("");
-  const [toAmount, setToAmount] = useState<string>("");
-  const [lastTouchedAmount, setLastTouchedAmount] = useState<"from" | "to">(
-    "from"
-  );
+  const [usdAmount, setUsdAmount] = useState<string>("");
 
   const fromTokenInfo = tokens.find((data) => data.symbol === fromToken);
   const toTokenInfo = tokens.find((data) => data.symbol === toToken);
+
+  const showUsdInput = Boolean(fromToken && toToken);
 
   const { data: fromPriceInfo, isLoading: isFromPriceInfoLoading } =
     useTokenPriceInfo({
@@ -29,51 +28,14 @@ export default function Home() {
       chainId: toTokenInfo?.chainId || "",
       symbol: toTokenInfo?.symbol || "",
     });
-  const conversionRatio: number | undefined =
-    fromPriceInfo && toPriceInfo
-      ? toPriceInfo.unitPrice / fromPriceInfo.unitPrice
-      : undefined;
+
+  const showConversion = Boolean(showUsdInput && usdAmount);
 
   const onClickSwap = () => {
     const currentFromToken = fromToken;
     setFromToken(toToken);
     setToToken(currentFromToken);
-
-    const currentFromAmount = fromAmount;
-    setFromAmount(toAmount);
-    setToAmount(currentFromAmount);
   };
-
-  const onChangeFromAmount = (amount: string) => {
-    setLastTouchedAmount("from");
-    setFromAmount(amount);
-    if (conversionRatio === undefined) return;
-    setToAmount((Number(amount) / conversionRatio).toString());
-  };
-
-  const onChangeToAmount = (amount: string) => {
-    setLastTouchedAmount("to");
-    setToAmount(amount);
-    if (conversionRatio === undefined) return;
-    setFromAmount((Number(amount) * conversionRatio).toString());
-  };
-
-  useEffect(() => {
-    if (!conversionRatio) {
-      if (lastTouchedAmount == "to") {
-        setFromAmount("");
-      } else {
-        setToAmount("");
-      }
-      return;
-    }
-    if (lastTouchedAmount == "to") {
-      setFromAmount((Number(toAmount) * conversionRatio).toString());
-    } else {
-      setToAmount((Number(fromAmount) / conversionRatio).toString());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only watch conversionRatio
-  }, [conversionRatio]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -107,25 +69,42 @@ export default function Home() {
           )}
         </Grid>
       </Grid>
-      <Grid container spacing={2} justifyContent="center">
-        <Grid>
+      {showUsdInput && (
+        <div className="text-center">
+          I want to convert{" "}
           <Input
             type="number"
-            value={fromAmount}
-            onChange={(event) => onChangeFromAmount(event.target.value)}
-            placeholder="Number of units"
+            placeholder="USD Amount"
+            className="w-32"
+            value={usdAmount}
+            onChange={(event) => setUsdAmount(event.target.value)}
           />
+          <b>USD</b> worth of <b>{fromToken}</b> to <b>{toToken}</b>
+        </div>
+      )}
+      {showConversion && (
+        <Grid container spacing={1} alignItems="center" justifyContent="center">
+          <Grid>
+            {isFromPriceInfoLoading ? (
+              <Skeleton width={100} />
+            ) : (
+              `${
+                Number(usdAmount) / (fromPriceInfo?.unitPrice || 0)
+              } ${fromToken}`
+            )}
+          </Grid>
+          <Grid>
+            <DoubleArrow />
+          </Grid>
+          <Grid>
+            {isToPriceInfoLoading ? (
+              <Skeleton width={100} />
+            ) : (
+              `${Number(usdAmount) / (toPriceInfo?.unitPrice || 0)} ${toToken}`
+            )}
+          </Grid>
         </Grid>
-        <Grid>=</Grid>
-        <Grid>
-          <Input
-            type="number"
-            value={toAmount}
-            onChange={(event) => onChangeToAmount(event.target.value)}
-            placeholder="Number of units"
-          />
-        </Grid>
-      </Grid>
+      )}
     </div>
   );
 }
