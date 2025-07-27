@@ -1,5 +1,6 @@
 "use client";
 
+import { PriceDisplay } from "@/components/PriceDisplay";
 import { TokenSelect } from "@/components/TokenSelect";
 import { tokens } from "@/constants/tokens";
 import { useTokenPriceInfo } from "@/hooks/useTokenPriceInfo";
@@ -18,16 +19,22 @@ export default function Home() {
 
   const showUsdInput = Boolean(fromToken && toToken);
 
-  const { data: fromPriceInfo, isLoading: isFromPriceInfoLoading } =
-    useTokenPriceInfo({
-      chainId: fromTokenInfo?.chainId || "",
-      symbol: fromTokenInfo?.symbol || "",
-    });
-  const { data: toPriceInfo, isLoading: isToPriceInfoLoading } =
-    useTokenPriceInfo({
-      chainId: toTokenInfo?.chainId || "",
-      symbol: toTokenInfo?.symbol || "",
-    });
+  const {
+    data: fromPriceInfo,
+    isLoading: isFromPriceInfoLoading,
+    error: fromPriceError,
+  } = useTokenPriceInfo({
+    chainId: fromTokenInfo?.chainId || "",
+    symbol: fromTokenInfo?.symbol || "",
+  });
+  const {
+    data: toPriceInfo,
+    isLoading: isToPriceInfoLoading,
+    error: toPriceError,
+  } = useTokenPriceInfo({
+    chainId: toTokenInfo?.chainId || "",
+    symbol: toTokenInfo?.symbol || "",
+  });
 
   const showConversion = Boolean(showUsdInput && usdAmount);
 
@@ -45,13 +52,11 @@ export default function Home() {
       <Grid container spacing={2} justifyContent="center">
         <Grid>
           <TokenSelect value={fromToken} onChange={setFromToken} label="From" />
-          {isFromPriceInfoLoading ? (
-            <Skeleton />
-          ) : fromPriceInfo?.unitPrice ? (
-            `${fromPriceInfo.unitPrice} USD/unit`
-          ) : (
-            ""
-          )}
+          <PriceDisplay
+            price={fromPriceInfo?.unitPrice}
+            error={fromPriceError}
+            isLoading={isFromPriceInfoLoading}
+          />
         </Grid>
         <Grid paddingTop={1}>
           <IconButton onClick={onClickSwap}>
@@ -60,13 +65,11 @@ export default function Home() {
         </Grid>
         <Grid>
           <TokenSelect value={toToken} onChange={setToToken} label="To" />
-          {isToPriceInfoLoading ? (
-            <Skeleton />
-          ) : toPriceInfo?.unitPrice ? (
-            `${toPriceInfo.unitPrice} USD/unit`
-          ) : (
-            ""
-          )}
+          <PriceDisplay
+            price={toPriceInfo?.unitPrice}
+            error={toPriceError}
+            isLoading={isToPriceInfoLoading}
+          />
         </Grid>
       </Grid>
       {showUsdInput && (
