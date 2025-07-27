@@ -10,8 +10,8 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [fromToken, setFromToken] = useState<string>("");
   const [toToken, setToToken] = useState<string>("");
-  const [fromAmount, setFromAmount] = useState<number>(0);
-  const [toAmount, setToAmount] = useState<number>(0);
+  const [fromAmount, setFromAmount] = useState<string>("");
+  const [toAmount, setToAmount] = useState<string>("");
   const [lastTouchedAmount, setLastTouchedAmount] = useState<"from" | "to">(
     "from"
   );
@@ -38,33 +38,33 @@ export default function Home() {
     setToToken(currentFromToken);
   };
 
-  const onChangeFromAmount = (amount: number) => {
+  const onChangeFromAmount = (amount: string) => {
     setLastTouchedAmount("from");
     setFromAmount(amount);
     if (conversionRatio === undefined) return;
-    setToAmount(amount / conversionRatio);
+    setToAmount((Number(amount) / conversionRatio).toString());
   };
 
-  const onChangeToAmount = (amount: number) => {
+  const onChangeToAmount = (amount: string) => {
     setLastTouchedAmount("from");
     setToAmount(amount);
     if (conversionRatio === undefined) return;
-    setFromAmount(amount / conversionRatio);
+    setFromAmount((Number(amount) / conversionRatio).toString());
   };
 
   useEffect(() => {
     if (!conversionRatio) {
       if (lastTouchedAmount == "to") {
-        setFromAmount(0);
+        setFromAmount("");
       } else {
-        setToAmount(0);
+        setToAmount("");
       }
       return;
     }
     if (lastTouchedAmount == "to") {
-      setFromAmount(toAmount / conversionRatio);
+      setFromAmount((Number(toAmount) / conversionRatio).toString());
     } else {
-      setToAmount(fromAmount / conversionRatio);
+      setToAmount((Number(fromAmount) / conversionRatio).toString());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only watch conversionRatio
   }, [conversionRatio]);
@@ -96,7 +96,7 @@ export default function Home() {
           <Input
             type="number"
             value={fromAmount}
-            onChange={(event) => onChangeFromAmount(Number(event.target.value))}
+            onChange={(event) => onChangeFromAmount(event.target.value)}
           />
         </Grid>
         <Grid>=</Grid>
@@ -104,7 +104,7 @@ export default function Home() {
           <Input
             type="number"
             value={toAmount}
-            onChange={(event) => onChangeToAmount(Number(event.target.value))}
+            onChange={(event) => onChangeToAmount(event.target.value)}
           />
         </Grid>
       </Grid>
