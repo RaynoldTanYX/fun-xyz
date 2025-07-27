@@ -1,103 +1,113 @@
-import Image from "next/image";
+"use client";
+
+import { TokenSelect } from "@/components/TokenSelect";
+import { tokens } from "@/constants/tokens";
+import { useTokenPriceInfo } from "@/hooks/useTokenPriceInfo";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
+import { Grid, IconButton, Input, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [fromToken, setFromToken] = useState<string>("");
+  const [toToken, setToToken] = useState<string>("");
+  const [fromAmount, setFromAmount] = useState<number>(0);
+  const [toAmount, setToAmount] = useState<number>(0);
+  const [lastTouchedAmount, setLastTouchedAmount] = useState<"from" | "to">(
+    "from"
+  );
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+  const fromTokenInfo = tokens.find((data) => data.symbol === fromToken);
+  const toTokenInfo = tokens.find((data) => data.symbol === toToken);
+
+  const { data: fromPriceInfo } = useTokenPriceInfo({
+    chainId: fromTokenInfo?.chainId || "",
+    symbol: fromTokenInfo?.symbol || "",
+  });
+  const { data: toPriceInfo } = useTokenPriceInfo({
+    chainId: toTokenInfo?.chainId || "",
+    symbol: toTokenInfo?.symbol || "",
+  });
+  const conversionRatio: number | undefined =
+    fromPriceInfo && toPriceInfo
+      ? toPriceInfo.unitPrice / fromPriceInfo.unitPrice
+      : undefined;
+
+  const onClickSwap = () => {
+    const currentFromToken = fromToken;
+    setFromToken(toToken);
+    setToToken(currentFromToken);
+  };
+
+  const onChangeFromAmount = (amount: number) => {
+    setLastTouchedAmount("from");
+    setFromAmount(amount);
+    if (conversionRatio === undefined) return;
+    setToAmount(amount / conversionRatio);
+  };
+
+  const onChangeToAmount = (amount: number) => {
+    setLastTouchedAmount("from");
+    setToAmount(amount);
+    if (conversionRatio === undefined) return;
+    setFromAmount(amount / conversionRatio);
+  };
+
+  useEffect(() => {
+    if (!conversionRatio) {
+      if (lastTouchedAmount == "to") {
+        setFromAmount(0);
+      } else {
+        setToAmount(0);
+      }
+      return;
+    }
+    if (lastTouchedAmount == "to") {
+      setFromAmount(toAmount / conversionRatio);
+    } else {
+      setToAmount(fromAmount / conversionRatio);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only watch conversionRatio
+  }, [conversionRatio]);
+
+  return (
+    <div className="flex flex-col gap-8">
+      <Typography variant="h5" textAlign="center">
+        Token Price Explorer
+      </Typography>
+      <Grid container spacing={2} justifyContent="center">
+        <Grid>
+          <TokenSelect value={fromToken} onChange={setFromToken} label="From" />
+          {fromPriceInfo?.unitPrice
+            ? `${fromPriceInfo.unitPrice} USD/unit`
+            : ""}
+        </Grid>
+        <Grid paddingTop={1}>
+          <IconButton onClick={onClickSwap}>
+            <CompareArrowsIcon />
+          </IconButton>
+        </Grid>
+        <Grid>
+          <TokenSelect value={toToken} onChange={setToToken} label="To" />
+          {toPriceInfo?.unitPrice ? `${toPriceInfo.unitPrice} USD/unit` : ""}
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} justifyContent="center">
+        <Grid>
+          <Input
+            type="number"
+            value={fromAmount}
+            onChange={(event) => onChangeFromAmount(Number(event.target.value))}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        </Grid>
+        <Grid>=</Grid>
+        <Grid>
+          <Input
+            type="number"
+            value={toAmount}
+            onChange={(event) => onChangeToAmount(Number(event.target.value))}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </Grid>
+      </Grid>
     </div>
   );
 }

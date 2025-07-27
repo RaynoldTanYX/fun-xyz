@@ -1,3 +1,25 @@
+# Fun.xyz Information
+
+## Objective
+The goal of this assignment is to assess your frontend development skills,
+particularly with React, your ability to interact with APIs, your understanding of
+component design, and your product sense in translating requirements into a
+working application. You will build a simplified interface that allows users to select
+crypto tokens and see their value relative to a USD amount and another crypto
+token.
+
+## Scenario
+
+Imagine you are building a feature for a crypto platform where users can explore
+potential token swaps. They need a simple tool to select two tokens (a source and
+a target) and input a USD amount to see the approximate equivalent amounts in
+those tokens.
+
+## Assumptions
+1. That the API key given is not a secret key, that it is ok to be used directly on the frontend. If not, we should access the API through a proxy backend.
+
+# Next.js Instructions
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
