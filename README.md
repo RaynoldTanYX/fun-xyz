@@ -17,6 +17,7 @@ those tokens.
 
 ## Assumptions
 1. That the API key given is not a secret key, that it is ok to be used directly on the frontend. If not, we should access the API through a proxy backend.
+2. We will use a hardcoded list of tokens as it is not documented which tokens are supported by the API.
 
 # Next.js Instructions
 
